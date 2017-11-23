@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.api.mapper.JingqingMapper">
+
+    <resultMap id="BaseResultMap" type="com.api.entity.JingQingInfoRecord">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="idNo" jdbcType="VARCHAR" property="idNo"/>
+        <result column="comformxingzhi" jdbcType="VARCHAR" property="comformXingZhi"/>
+        <result column="place" jdbcType="VARCHAR" property="place"/>
+        <result column="xingzhi" jdbcType="VARCHAR" property="xingZhi"/>
+        <result column="Briefly" jdbcType="VARCHAR" property="briefly"/>
+        <result column="date1" jdbcType="VARCHAR" property="date1"/>
+        <result column="date2" jdbcType="VARCHAR" property="date2"/>
+        <result column="placedetail" jdbcType="VARCHAR" property="placeDetail"/>
+        <result column="Alarm_mode" jdbcType="VARCHAR" property="alarmMode"/>
+        <result column="alarm_Company" jdbcType="VARCHAR" property="alarmCompany"/>
+        <result column="process" jdbcType="VARCHAR" property="process"/>
+        <result column="Number_captured" jdbcType="VARCHAR" property="numberCaptured"/>
+        <result column="Rescued_population" jdbcType="VARCHAR" property="rescuedPopulation"/>
+        <result column="Rescued_child_population" jdbcType="VARCHAR" property="rescuedChildPopulation"/>
+        <result column="chu_jing_number" jdbcType="VARCHAR" property="chuJingPerson"/>
+        <result column="jing_li" jdbcType="VARCHAR" property="jingLi"/>
+        <result column="chuan_ci" jdbcType="VARCHAR" property="chuanCi"/>
+        <result column="hangkong_number" jdbcType="VARCHAR" property="hangkongNumber"/>
+        <result column="process_result" jdbcType="VARCHAR" property="processResult"/>
+        <result column="leader_opinion" jdbcType="VARCHAR" property="leaderOpinion"/>
+        <result column="fill_form_date" jdbcType="VARCHAR" property="fillFormDate"/>
+        <result column="jiejing_person" jdbcType="VARCHAR" property="jieJingPerson"/>
+        <result column="alarm_date" jdbcType="VARCHAR" property="alarmDate"/>
+        <result column="place_area" jdbcType="VARCHAR" property="placeArea"/>
+        <result column="place_street" jdbcType="VARCHAR" property="placeStreet"/>
+        <result column="jingqing_type" jdbcType="VARCHAR" property="jingQingType"/>
+        <result column="isvalid" jdbcType="VARCHAR" property="isValid"/>
+        <result column="discover_time" jdbcType="VARCHAR" property="discoverTime"/>
+        <result column="Subordinate_community" jdbcType="VARCHAR" property="subordinateCommunity"/>
+        <result column="bus_number" jdbcType="VARCHAR" property="busNumber"/>
+        <result column="coordinateX" jdbcType="VARCHAR" property="coordinateX"/>
+        <result column="coordinateY" jdbcType="VARCHAR" property="coordinateY"/>
+        <result column="sunshi_zhekuan" jdbcType="VARCHAR" property="sunshiZhekuan"/>
+        <result column="injured_number" jdbcType="VARCHAR" property="injuredNumber"/>
+        <result column="is_delete" jdbcType="VARCHAR" property="isDelete"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="shizhu_phone" jdbcType="VARCHAR" property="shizhuPhone"/>
+        <result column="Informant_phone" jdbcType="VARCHAR" property="informantPhone"/>
+        <result column="District" jdbcType="VARCHAR" property="district"/>
+        <result column="process_time" jdbcType="VARCHAR" property="processTime"/>
+        <result column="dead_number" jdbcType="VARCHAR" property="deadNumber"/>
+        <result column="police_area" jdbcType="VARCHAR" property="policeArea"/>
+        <result column="fill_form_person" jdbcType="VARCHAR" property="fillFormPerson"/>
+    </resultMap>
+
+    <select id="getLastFiveNumberJingQing" resultMap="BaseResultMap">
+        select * from tb_jingqinginfo order by alarm_date DESC LIMIT 6
+    </select>
+
+    <select id="getJingQingInfoById" resultMap="BaseResultMap">
+       select * from tb_jingqinginfo where id= #{id}
+    </select>
+
+    <select id="getJingQingMoreInfoByCount" resultMap="BaseResultMap">
+        select * from tb_jingqinginfo where 1=1
+        <if test="startTime!=null">
+            and alarm_date between #{startTime} and #{endTime}
+        </if>
+        <if test="brieflyss!=null">
+            and
+            <foreach collection="brieflyss" item="item"   separator="OR">
+                  briefly like '%${item}%'
+            </foreach>
+        </if>
+
+
+        <if test="conformJingqingXingzhis!=null">
+            and comformxingzhi IN (
+            <foreach collection="conformJingqingXingzhis" item="item" separator=",">
+                ${item}
+            </foreach>
+            )
+        </if>
+        <if test="alarmCompanys!=null">
+            and alarm_Company IN (
+            <foreach collection="alarmCompanys" item="item" separator=",">
+                ${item}
+            </foreach>
+            )
+        </if>
+        <if test="chooseIdNo!=null">
+            and idNo like CONCAT('%',#{chooseIdNo},'%')
+        </if>
+        <if test="informantPhoneChoose!=null">
+            and Informant_phone like CONCAT('%',#{informantPhoneChoose},'%')
+        </if>
+
+        order by alarm_date DESC LIMIT #{count}
+
+    </select>
+
+    <select id="getAllConformJingqingXingzhi" resultType="java.lang.String">
+        select comformxingzhi FROM tb_jingqinginfo GROUP BY comformxingzhi
+    </select>
+
+    <select id="getAllAlarmCompany" resultType="java.lang.String">
+       select alarm_company FROM tb_jingqinginfo GROUP BY alarm_company
+    </select>
+
+    <select id="getWeekAlarmStatic" resultType="com.api.entity.AnQingRecord">
+       select count(*) as number, alarm_Company from tb_jingqinginfo
+                 where alarm_date BETWEEN CONCAT(date_format(date_sub(date(NOW()), interval 7 day),'%Y-%m-%d') ,' 00:00:00' )
+                 and CONCAT(date_format(date(NOW()),'%Y-%m-%d') ,' 23:59:59')
+                 GROUP BY alarm_Company ORDER BY number DESC
+    </select>
+
+</mapper>

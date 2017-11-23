@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+mybatis:
+  mapperLocations: classpath:mybatis/mapper/*.xml
+  typeAliasesPackage: com.hl.entity
+
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.1.6:3306/huidongpolice?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: Huawei123
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    minIdle: 10
+    maxActive: 200
+    initialSize: 100
+    timeBetweenEvictionRunsMillis: 3000
+    minEvictableIdleTimeMillis: 300000
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturnhu : false
